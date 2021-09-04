@@ -3,12 +3,6 @@
     name: ssl-cert
     state: present
 
-- name: Download LetsEncrypt release
-  git: repo=https://github.com/letsencrypt/letsencrypt
-       dest=/root/letsencrypt
-       version=master
-       force=yes
-
 - name: Create directory for LetsEncrypt configuration and certificates
   file: state=directory path=/etc/letsencrypt group=root owner=root
 
@@ -19,10 +13,10 @@
     owner=root
     group=root
 
-- name: Install LetsEncrypt package dependencies
-  command: /root/letsencrypt/letsencrypt-auto --help
-  register: le_deps_result
-  changed_when: "'Bootstrapping dependencies' in le_deps_result.stdout"
+- name: Install Certbot
+  apt: pkg=certbot state=present
+  tags:
+    - dependencies
 
 - name: Create directory for pre-renewal scripts
   file: state=directory path=/etc/letsencrypt/prerenew group=root owner=root
@@ -45,6 +39,12 @@
     owner: root
     group: root
     mode: 0755
+
+- name: Disable bundled timer
+  systemd:
+    name: certbot.timer
+    state: stopped
+    enabled: no
 
 - name: Install crontab entry for LetsEncrypt
   copy:

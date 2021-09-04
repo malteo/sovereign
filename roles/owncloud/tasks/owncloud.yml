@@ -56,4 +56,4 @@
   notify: restart apache
 
 - name: Install ownCloud cronjob
-  cron: name="ownCloud" user="www-data" minute="*/5" job="php -f /var/www/owncloud/cron.php > /dev/null"
+  cron: name="ownCloud" user="www-data" minute="*/15" job="php -f /var/www/owncloud/occ system:cron > /dev/null"

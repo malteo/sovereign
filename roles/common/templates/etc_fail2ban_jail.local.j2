@@ -6,7 +6,7 @@ banaction = iptables-multiport
 action    = %(action_)s
 
 # JAILS
-[ssh]
+[sshd]
 enabled   = true
 maxretry  = 3
 
@@ -14,15 +14,16 @@ maxretry  = 3
 enabled   = true
 banaction = iptables-allports
 
-[ssh-ddos]
+[sshd-ddos]
 enabled   = true
 
-[apache]
+[apache-auth]
 enabled = true
 
 [postfix]
 enabled  = true
 maxretry = 1
+logpath = /var/log/mail.log
 
 [dovecot-pop3imap]
 enabled = true

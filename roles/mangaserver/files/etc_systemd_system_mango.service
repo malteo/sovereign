@@ -1,0 +1,13 @@
+[Unit]
+Description=Mango manga server
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/local/bin/mango
+User=mango
+
+[Install]
+WantedBy=default.target

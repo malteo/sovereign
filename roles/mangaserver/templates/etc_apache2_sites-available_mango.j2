@@ -1,0 +1,18 @@
+<VirtualHost *:80>
+  ServerName {{ manga_server_hostname }}
+  Redirect permanent / https://{{ manga_server_hostname }}/
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName {{ manga_server_hostname }}
+  SSLEngine On
+  <Location />
+    RewriteEngine On
+    RewriteCond %{HTTP:Connection} Upgrade [NC]
+    RewriteCond %{HTTP:Upgrade} websocket [NC]
+    RewriteRule /(.*) ws://127.0.0.1:9000/$1 [P,L]
+
+    ProxyPass "http://localhost:9000/"
+    ProxyPassReverse "http://localhost:9000/"
+  </Location>
+</VirtualHost>

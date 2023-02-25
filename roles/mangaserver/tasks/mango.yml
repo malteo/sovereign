@@ -1,0 +1,46 @@
+- name: Download mango
+  get_url: >-
+    url=https://github.com/getmango/Mango/releases/download/v0.27.0/mango
+    dest=/usr/local/bin/mango
+    checksum=sha256:e2a90d91927bfbdbe378189fc8342a1dfc186319ebb8196c58db9cc80c11d375
+    mode=0755
+
+- name: Create mango group
+  group: name=mango state=present
+
+- name: Create mango user
+  user: name=mango state=present home=/decrypted/mango system=yes group=mango shell=/usr/sbin/nologin
+
+- name: Ensure pid directory exists
+  file: state=directory path=/var/run/mango group=mango owner=mango
+
+- name: Copy mango service file into place
+  copy: src=etc_systemd_system_mango.service dest=/etc/systemd/system/mango.service mode=0644
+
+- name: Create mango config directory
+  file: state=directory path=/decrypted/mango/.config/mango group=mango owner=mango
+
+- name: Copy mango configuration file into place
+  copy: src=config.yml dest=/decrypted/mango/.config/mango/config.yml owner=mango group=mango
+  notify: restart mango
+
+- name: Ensure mango is a system service
+  service: name=mango state=restarted enabled=true
+
+- name: Configure the manga server virtualhost
+  template: >-
+    src=etc_apache2_sites-available_mango.j2
+    dest=/etc/apache2/sites-available/mango.conf
+    group=root
+    owner=root
+  notify: restart apache
+
+- name: Enable Apache rewrite module
+  command: a2enmod rewrite creates=/etc/apache2/mods-enabled/rewrite.load
+
+- name: Enable Apache proxy module
+  command: a2enmod proxy_http creates=/etc/apache2/mods-enabled/proxy_http.load
+
+- name: Enable the manga server virtualhost
+  command: a2ensite mango.conf creates=/etc/apache2/sites-enabled/mango.conf
+  notify: restart apache

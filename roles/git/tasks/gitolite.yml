@@ -31,5 +31,6 @@
   command: >-
     gitolite setup -pk {{ main_user_name }}.pub
     chdir=/home/git
+    creates=/home/git/.gitolite
   tags:
     - skip_ansible_lint

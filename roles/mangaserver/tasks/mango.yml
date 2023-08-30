@@ -1,3 +1,10 @@
+- name: Install mango dependencies
+  apt: pkg={{ item }} state=present
+  with_items:
+    - subversion
+  tags:
+    - dependencies
+
 - name: Download mango
   get_url: >-
     url=https://github.com/getmango/Mango/releases/download/v0.27.0/mango
@@ -38,8 +45,11 @@
 - name: Enable Apache rewrite module
   command: a2enmod rewrite creates=/etc/apache2/mods-enabled/rewrite.load
 
-- name: Enable Apache proxy module
+- name: Enable Apache proxy_http module
   command: a2enmod proxy_http creates=/etc/apache2/mods-enabled/proxy_http.load
+
+- name: Enable Apache proxy_wstunnel module
+  command: a2enmod proxy_wstunnel creates=/etc/apache2/mods-enabled/proxy_wstunnel.load
 
 - name: Enable the manga server virtualhost
   command: a2ensite mango.conf creates=/etc/apache2/sites-enabled/mango.conf
